@@ -14,7 +14,7 @@ import pickle
 from importlib import reload
 import sys
 
-sys.path.append('/Users/harrysteinharter/Documents/MSc/Timo Internship/7LineSegments')
+sys.path.append('/Users/visionlab/Documents/Project_Harry_S/7LineSegments/')
 import otherFunctions as OF # Has to go after changing directory bc of it's location
 reload(OF) # Allows me to edit OF w/out restartig VSCode
 
@@ -30,7 +30,7 @@ def SubNumber(filename):
         file.write(str(new_content))
     return new_content
 
-nSubject = SubNumber('FFE_Pilot_subNumber.txt')
+nSubject = SubNumber('subNumSeperate.txt')
 dateStr = data.getDateStr(fractionalSecondDigits = 1)
 
 ShouldLog = True
@@ -46,7 +46,7 @@ if ShouldLog:
 
 SubjectInfo = "Subject_"+str(nSubject)+"_"
 
-fileName = SubjectInfo+dateStr
+fileName = SubjectInfo+'Seperate'
 pathName = os.path.join(os.getcwd(),"Outputs/")
 fullFile = pathName + fileName
 ############################################################################
@@ -90,7 +90,7 @@ fixation = visual.GratingStim(win = mywin, color=-1, colorSpace='rgb',tex=None, 
 # Initialize clocks for global and trial timing (We might delete it)
 globalClock = core.Clock()
 trialClock = core.Clock()
-break_t = 10 # Mandatory duration of breaks (in seconds).
+break_t = 2 # Mandatory duration of breaks (in seconds).
 
 #### Define the messages that appear ####
 message1 = visual.TextStim(win=mywin, pos=[0,0],colorSpace='rgb',color = [-1,-1,-1],
