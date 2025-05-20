@@ -7,6 +7,7 @@ library(lme4)
 library(ggpubr)
 library(afex)
 library(merTools)
+library(emmeans)
 
 
 MC <- function(L_max, L_min = 112.6482, nDigits=4){
@@ -66,9 +67,24 @@ model_LRT <- mixed(data = df,
                                           check.conv.grad = .makeCC("warning", tol = 0.005, relTol = NULL))
                    )
 
+#### ANOVA ####
+model_lm <- lmer(data = df,
+                       formula = "accuracy ~ Condition * TC_factor + (1 | Participant_Number)",
+                       weights = weights,
+                       contrasts = list(Condition = levels(df$Condition) %>% contr.treatment()))
+
+model_anova <- car::Anova(model_lm,type = 3)
+em_pairs <- emmeans(model_lm, specs = ~ Condition|TC_factor) %>% pairs()
+
+#### T-Test ####
+model_t <- lm(data = df,
+              formula = 'accuracy ~ Condition',
+              weights = weights,
+              contrasts = list(Condition = levels(df$Condition) %>% contr.treatment()))
+
+#### Line Plot ####
 palette <- c('Together' = 'firebrick', 'Seperate' = 'dodgerblue')
 factorCuts <- subset(df, TC_factor == 'Medium', select = TC_michelson) %>% range()
-#### Line Plot ####
 ggplot(data = df,
        mapping = aes(x = TC_michelson, y = probability, colour = Condition)) +
   geom_line(linewidth = 1) +
