@@ -82,6 +82,14 @@ model_t <- lm(data = df,
               weights = weights,
               contrasts = list(Condition = levels(df$Condition) %>% contr.treatment()))
 
+#### N Lower Tail ####
+min_Seperate <- df %>% subset(Condition == 'Seperate', select = TC_michelson) %>% min()
+min_Together <- df %>% subset(Condition == 'Together', select = TC_michelson) %>% min()
+n_Together_less <- df %>% subset(Condition == 'Together' & TC_michelson < min_Seperate, select = weights) %>% sum()
+nEachCond <- sum(df$weights) / 2
+ratio_t <- ((n_Together_less/nEachCond) * 100) %>% round(1) %>% paste0('%')
+text <- paste("# Trials:",n_Together_less,'/',nEachCond, '=', ratio_t)
+
 #### Line Plot ####
 palette <- c('Together' = 'firebrick', 'Seperate' = 'dodgerblue')
 factorCuts <- subset(df, TC_factor == 'Medium', select = TC_michelson) %>% range()
@@ -93,11 +101,19 @@ ggplot(data = df,
   xlab("Target Contrast") +
   ylab("Detection Probability") +
   theme_pubr() +
+  geom_vline(xintercept = factorCuts, linetype = 'dotted') + 
+  annotate(geom = 'text', family = 'times',
+           x = sqrt(min_Seperate*min_Together), y = .45, label = text) + 
+  annotate(geom = 'segment', x = min_Together, xend = min_Seperate,
+           y = .4, yend = .4, color = 'firebrick') + 
+  annotate(geom = 'segment', x = min_Together, xend = min_Together,
+           y = .35, yend = .45, color = 'firebrick') +
+  annotate(geom = 'segment', x = min_Seperate, xend = min_Seperate,
+           y = .35, yend = .45, color = 'firebrick') +
   theme(
     legend.title = element_text(hjust = .5, vjust = .5),
     text = element_text(size=16,family='times'),
-    legend.position = 'top') + 
-  geom_vline(xintercept = factorCuts, linetype = 'dotted')
+    legend.position = 'top')
 
 #### ANOVA Plot ####
 ggplot(data = dfCondSummary,
